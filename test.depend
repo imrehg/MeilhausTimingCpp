@@ -1,0 +1,39 @@
+# depslib dependency file v1.0
+1353316044 source:d:\herbert\con_meiosinglewriteanalogsyncexttrigger\main.cpp
+	"stdafx.h"
+	<stdio.h>
+	<conio.h>
+	<memory.h>
+	"medriver.h"
+	"TestConsoleGeneric.h"
+
+1238659726 d:\herbert\con_meiosinglewriteanalogsyncexttrigger\stdafx.h
+	<stdio.h>
+	<tchar.h>
+
+1327291248 d:\herbert\\medriver.h
+	"metypes.h"
+	"meerror.h"
+	"medefines.h"
+
+1327289370 d:\herbert\\metypes.h
+
+1327291256 d:\herbert\\meerror.h
+
+1327623768 d:\herbert\\medefines.h
+
+1265958834 d:\herbert\\testconsolegeneric.h
+
+1327291248 d:\herbert\con_meiosinglewriteanalogsyncexttrigger\medriver.h
+	"metypes.h"
+	"meerror.h"
+	"medefines.h"
+
+1327289370 d:\herbert\con_meiosinglewriteanalogsyncexttrigger\metypes.h
+
+1327291256 d:\herbert\con_meiosinglewriteanalogsyncexttrigger\meerror.h
+
+1327623768 d:\herbert\con_meiosinglewriteanalogsyncexttrigger\medefines.h
+
+1265958834 d:\herbert\con_meiosinglewriteanalogsyncexttrigger\testconsolegeneric.h
+

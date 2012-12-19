@@ -391,6 +391,91 @@ Map_LookupPowerToVoltage(double *mapKey, double *mapValue, int size, int ch, Wav
 #endif
     return 0;
 }
+
+
+int Timing(
+    // intputs
+    double  loop,
+    double  sample_rate,
+    char    *conf_path,
+    // outputs
+    int     *samples_each,
+    int     *channels_num,
+    double  **ret
+){
+    FILE     *f;
+    int      nSample;
+//    int      nMap;
+//    double   *key, *value;
+//    int      i, index_max;
+//    double   *ret;
+
+    ControlPointStruct  *c;
+    WaveformStruct      *w;
+
+    // parsing timing data
+    f = fopen(conf_path, "r");
+    if(f == NULL){
+        printf("unknown path: %s", conf_path);
+        return -1;
+    }
+    c = Parse_FileTo2DArray(f);
+    fclose(f);
+
+    // build waveform
+    nSample = FindWaveformSampleNum(c, loop, sample_rate);
+    w = CreateWaveformStruct(c->nChannels, nSample);
+    Build_AllChannel(c,w,loop,sample_rate);
+/*
+    int      ch;
+    // further mapping the waveform
+    f = fopen(YAG1_path,"r");
+    if(f == NULL){
+        printf("unknown path: %s", conf_path);
+        return -1;
+    }
+    ch = 9;
+    nMap = Map_ReadFromFile(f, &key, &value);
+    fclose(f);
+    Map_LookupPowerToVoltage(key,value,nMap,ch,w);
+    FreeProductOf_Map_ReadFromFile(key,value);
+
+    f = fopen(YAG2_path,"r");
+    if(f == NULL){
+        printf("unknown path: %s", conf_path);
+        return -1;
+    }
+    ch = 10;
+    nMap = Map_ReadFromFile(f, &key, &value);
+    fclose(f);
+    Map_LookupPowerToVoltage(key,value,nMap,ch,w);
+    FreeProductOf_Map_ReadFromFile(key,value);
+
+
+    // print out the outcome
+    f = fopen("CtrlPtRead.txt","w");
+    display(f, c);
+    fclose(f);
+    for(ch = 0; ch < w->nChannels; ++ch){
+        sprintf(filename,"ch%d.csv",ch);
+        f = fopen(filename,"w");
+        waveformRecord(f,w,ch);
+        fclose(f);
+    }
+*/
+
+    // putting the data
+    *samples_each = w->nSamples;
+    *channels_num = w->nChannels;
+    *ret = w->Data;
+    w->Data = NULL;
+
+    // clearing the data
+    FreeProductOf_Parse_FileTo2DArray(c);
+    DestroyWaveformStruct(w);
+    return 0;
+}
+
 #ifdef __cplusplus
 }
 #endif

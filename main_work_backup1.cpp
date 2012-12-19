@@ -35,13 +35,6 @@ struct SAOSubddevice
     SAORange m_arrRanges[MAX_RANGES];
     int m_iCurrentRange;
 };
-struct SDigitalInSubddevice
-{
-    int	m_iDeviceIndex;
-    int m_iSubdeviceIndex;
-    int m_iType;
-    int m_iWidth;
-};
 
 int utilBuildAOSub(SAOSubddevice *AOSubdevice,
                    int index_device,
@@ -53,7 +46,7 @@ int main(int argc, char* argv[])
 	// Call generic console function in parent directory to
 	// open system and list the available devices and subdevices.
     double  loop = 0;
-    double  sample_rate = 20; //kHz
+    double  sample_rate = 20; //20k
     char    conf_path[] = "MOTconf.csv";
 
 	int i_number_of_devices = TestConsoleMEIDSProlog();
@@ -62,14 +55,14 @@ int main(int argc, char* argv[])
 		return(-1);
 
 	// ---------------------------------------------------------------------
+	// Count the AO sub-devices in the system
+
 	int i_number_ao_subdevices = 16;
-	int i_number_di_dio_subdevices = 2;
 	int i_me_error;
 
 	// Make a list of the AO sub-devices
 	SAOSubddevice* arrSubdevices = new SAOSubddevice[i_number_ao_subdevices];
-	// Make a list of the DI sub-devices
-	SDigitalInSubddevice* arrSubdevicesDigital = new SDigitalInSubddevice[i_number_di_dio_subdevices];
+	i_number_ao_subdevices = 0;
 
 	for(int index_device = 0; index_device < i_number_of_devices; index_device++)
 	{
@@ -97,11 +90,10 @@ int main(int argc, char* argv[])
 
 		int index_subdevice = 0;
 		int i_number_of_subdevices;
-		i_number_ao_subdevices = 0;
 		i_me_error = meQueryNumberSubdevices(	index_device,				// Device index
 												&i_number_of_subdevices);	// Number of subdevices returned here
 
-        // The while-loop building the AO subdevice structure for each ao subdevice
+        // The while-loop building the subdevice structure for each ao subdevice
 		while(true)
 		{
 			i_me_error = meQuerySubdeviceByType(index_device,					// Device
@@ -122,33 +114,6 @@ int main(int argc, char* argv[])
 			if(++index_subdevice >= i_number_of_subdevices)
 				break;
 		}
-
-		// The while-loop building the DI subdevice strcture for each di subdevice
-		index_subdevice = 0;
-		i_number_di_dio_subdevices = 0;
-		while(true)
-		{
-			i_me_error = meQuerySubdeviceByType(index_device,					// Device
-												index_subdevice,				// Begin search at this sub-device
-												ME_TYPE_DIO,						// Type of sub-device to search for
-												ME_SUBTYPE_ANY,					// Sub-type of sub-device to search for
-												&index_subdevice	);			// sub-device index returned here
-
-			if(i_me_error != ME_ERRNO_SUCCESS)
-				break;
-
-			arrSubdevicesDigital[i_number_di_dio_subdevices].m_iDeviceIndex = index_device;
-			arrSubdevicesDigital[i_number_di_dio_subdevices].m_iSubdeviceIndex = index_subdevice;
-			arrSubdevicesDigital[i_number_di_dio_subdevices].m_iType = ME_TYPE_DIO;
-
-			i_me_error = meQueryNumberChannels(	index_device,										// Device
-												index_subdevice,									// Sub-device
-												&arrSubdevicesDigital[i_number_di_dio_subdevices].m_iWidth	);	// Number of channels returned here
-
-			++i_number_di_dio_subdevices;
-			if(++index_subdevice >= i_number_of_subdevices)
-				break;
-		}
 	}
 
     // print the info of each subdevice
@@ -162,29 +127,36 @@ int main(int argc, char* argv[])
 				arrSubdevices[index_subdevice].m_iNumberOfChannels,
 				arrSubdevices[index_subdevice].m_iNumberOfRanges		);
 	}
-	// print the info of each digital subdevice
-	printf("\n%d DI or DIO sub-devices found:\n\n", i_number_di_dio_subdevices);
-	for(int index_subdevice = 0; index_subdevice < i_number_di_dio_subdevices; index_subdevice++)
-	{
-		printf("%2d.   Device: %2d  Sub-device: %2d  Type: %s  Width: %2d Bits\n",
-				index_subdevice + 1,
-				arrSubdevicesDigital[index_subdevice].m_iDeviceIndex,
-				arrSubdevicesDigital[index_subdevice].m_iSubdeviceIndex,
-				(arrSubdevicesDigital[index_subdevice].m_iType == ME_TYPE_DIO) ? "DIO" : " DI",
-				arrSubdevicesDigital[index_subdevice].m_iWidth										);
-	}
 //// ******************The End of Acquiring the subdevices information********************* ////
 //// ************The following is the configuration and the main output part.************** ////
     while(true)
     {
+        // this should be iterated
+        int index_subdevice = 0;
+
+        // there is just one channel in analog output
+        int index_channel = 0;
+
+        // there is only one range
+        int index_range = 0;
+
+        // I choose synchronous mode
+        int i_trigger_channel = ME_TRIG_CHAN_SYNCHRONOUS;
+        //i_trigger_channel = ME_TRIG_CHAN_DEFAULT;
+        //i_trigger_channel = ME_TRIG_CHAN_SYNCHRONOUS;
+
+        // I choose external digital trigger
+        int i_trigger_type = ME_TRIG_TYPE_SW;
+        //i_trigger_type = ME_TRIG_TYPE_SW;
+        //i_trigger_type = ME_TRIG_TYPE_EXT_DIGITAL;
+
+        int i_trigger_edge = ME_TRIG_EDGE_RISING;
+        //i_trigger_edge = ME_VALUE_NOT_USED;
+        //i_trigger_edge = ME_TRIG_EDGE_RISING;
+        //i_trigger_edge = ME_TRIG_EDGE_FALLING;
+        //i_trigger_edge = ME_TRIG_EDGE_ANY;
+
         // Configure the device
-		// ME_TRIG_CHAN_SYNCHRONOUS for simultaneous outputing, ME_TRIG_TYPE_SW for software trigger
-        int index_subdevice = 0;   // this should be iterated
-        int index_channel = 0;     // there is just one channel in analog output
-        int index_range = 0;       // there is only one range
-        int i_trigger_channel = ME_TRIG_CHAN_SYNCHRONOUS;  //i_trigger_channel = ME_TRIG_CHAN_DEFAULT,  ME_TRIG_CHAN_SYNCHRONOUS;
-        int i_trigger_type = ME_TRIG_TYPE_SW;              //i_trigger_type = ME_TRIG_TYPE_SW,  ME_TRIG_TYPE_EXT_DIGITAL;
-        int i_trigger_edge = ME_TRIG_EDGE_RISING;          //i_trigger_edge = ME_VALUE_NOT_USED,  ME_TRIG_EDGE_RISING,  ME_TRIG_EDGE_FALLING,  ME_TRIG_EDGE_ANY
         for(index_subdevice = 0; index_subdevice < i_number_ao_subdevices; index_subdevice++)
         {
             i_me_error = meIOSingleConfig(	arrSubdevices[index_subdevice].m_iDeviceIndex,			// Device index
@@ -196,33 +168,22 @@ int main(int argc, char* argv[])
                                             i_trigger_type,											// Trigger type - software
                                             i_trigger_edge,											// Trigger edge - not applicable
                                             ME_IO_SINGLE_CONFIG_NO_FLAGS						);	// Flags
-            if(i_me_error != ME_ERRNO_SUCCESS)
+
+            if(i_me_error == ME_ERRNO_SUCCESS)
+            {
+                printf("\nsub-device configured\n\n");
+                arrSubdevices[index_subdevice].m_iCurrentRange = index_range;
+            }
+            else
             {
                 printf("\n****    meIOSingleConfig - Error: %d    ****\n\n", i_me_error);
                 goto error;
             }
         }
 
-		// configure digital part
-		int index_subdevice_d = 0;
-		i_me_error = meIOSingleConfig(	arrSubdevicesDigital[index_subdevice_d].m_iDeviceIndex,		// Device index
-										arrSubdevicesDigital[index_subdevice_d].m_iSubdeviceIndex,	// Subdevcie index
-										0,													// Channel
-										ME_SINGLE_CONFIG_DIO_INPUT,							// Single config
-										ME_VALUE_NOT_USED,									// Reference
-										ME_TRIG_CHAN_DEFAULT,								// Trigger channel
-										ME_TRIG_TYPE_NONE,									// Trigger type
-										ME_VALUE_NOT_USED,									// Trigger edge
-										ME_IO_SINGLE_CONFIG_DIO_BYTE     ); // Flags
-		if(i_me_error != ME_ERRNO_SUCCESS)
-		{
-			printf("\n****    meIOSingleConfig - Error: %d    ****\n\n", i_me_error);
-			goto error;
-		}
-
-
-        // Fetch the range information which is required to convert from
+        // Fetch the range information which will be required to convert from
         // physical units to a digital value for the output below
+
         double d_phys_min;
         double d_phys_max;
         int i_digital_max;
@@ -241,22 +202,20 @@ int main(int argc, char* argv[])
         }
         printf("max:%.5fV,  min:%.5fV\n",d_phys_max,d_phys_min);
 
-
-        // ==== This is the Streamming data ======================================================
+        // ==== This is the Testing Streamming data ======================================================
         int     t = clock();
         int     myError;
 		int     samples_each;
 		int     channels_num;
 		double  *ret;
-
         myError = Timing( /* intputs: */ loop,  sample_rate, conf_path,
                           /* outputs: */ &samples_each, &channels_num, &ret );
 
-        int **iDataOfChannel = (int**) malloc(channels_num*sizeof(int*));
-        int  *iData          = (int*)  malloc(channels_num*samples_each*sizeof(int));
+        int **idxDataOfChannel = (int**)malloc(channels_num*sizeof(int*));
+        int  *iData            = (int*) malloc(channels_num*samples_each*sizeof(int));
 
         for(int i = 0; i < channels_num; ++i)
-            iDataOfChannel[i] = &iData[i*samples_each];
+            idxDataOfChannel[i] = &iData[i*samples_each];
 
         for(int i = 0, j=samples_each*channels_num; i < j; ++i)
         {
@@ -268,14 +227,14 @@ int main(int argc, char* argv[])
             if(i_me_error != ME_ERRNO_SUCCESS)
             {
                 printf("****    meUtilityPhysicalToDigital - Error: %d    ****\n\n", i_me_error);
-                free(iDataOfChannel);
+                free(idxDataOfChannel);
                 free(iData);
                 goto error;
             }
         }
         t = clock()-t;
         printf("Generating timing: %.2fms\n", (double)t/(double)CLOCKS_PER_SEC*1000.0);
-        // ==== end of the streamming data =======================================================
+        // ==== end of the testing streamming data =======================================================
 
 
         // Timeout, milliseconds (0  - 10000, 0 --> No Timeout)
@@ -286,81 +245,50 @@ int main(int argc, char* argv[])
         //i_flags|= ME_IO_SINGLE_TYPE_WRITE_NONBLOCKING; // this is for running writing in the background
 
         meIOSingle_t io_single[16];
-		for(index_subdevice = 0; index_subdevice < 16; ++index_subdevice)
-		{
-			if(index_subdevice==15)
-				i_flags|= ME_IO_SINGLE_TYPE_TRIG_SYNCHRONOUS;
-			io_single[index_subdevice].iDevice    = arrSubdevices[index_subdevice].m_iDeviceIndex;
-			io_single[index_subdevice].iSubdevice = arrSubdevices[index_subdevice].m_iSubdeviceIndex;
-			io_single[index_subdevice].iChannel	= index_channel;
-			io_single[index_subdevice].iDir		= ME_DIR_OUTPUT;
-			io_single[index_subdevice].iTimeOut	= i_timeout_ms;							// No timeout - not required for software output
-			io_single[index_subdevice].iFlags	= i_flags;
-		}
-
-
-		// digital trigger io_single_d list setting
-		meIOSingle_t io_single_d[1];
-		io_single_d[0].iDevice    = arrSubdevicesDigital[index_subdevice_d].m_iDeviceIndex;
-		io_single_d[0].iSubdevice = arrSubdevicesDigital[index_subdevice_d].m_iSubdeviceIndex;
-		io_single_d[0].iChannel   = 0;
-		io_single_d[0].iDir       = ME_DIR_INPUT;
-		io_single_d[0].iValue     = 0;
-		io_single_d[0].iTimeOut   = 0;   // No timeout - not required for software output
-		io_single_d[0].iFlags     = ME_IO_SINGLE_TYPE_DIO_BYTE;
-        int counter = 0;
-        while(true)
-		{
-            for(int idx_sample = 0; idx_sample < samples_each; ++idx_sample)
+        int i_digital_value = 0;
+        for(int idx_sample = 0; idx_sample < samples_each; ++idx_sample)
+        {
+            i_flags = ME_IO_SINGLE_TYPE_NO_FLAGS;
+            for(index_subdevice = 0; index_subdevice < 16; ++index_subdevice)
             {
-                for(index_subdevice = 0; index_subdevice < 16; ++index_subdevice)
-                    io_single[index_subdevice].iValue = iDataOfChannel[index_subdevice][idx_sample];
-
-                i_me_error = meIOSingle(&io_single[0],				// Output list
-                                        16,							// Number of elements in the above list
-                                        ME_IO_SINGLE_NO_FLAGS	);	// Flags
-                if(i_me_error == ME_ERRNO_SUCCESS){}
-                else if(i_me_error == ME_ERRNO_TIMEOUT)
-                {
-                    printf("****    meIOSingle - Timeout    ****\n\n");
-                }
-                else
-                {
-                    printf("****    meIOSingle - Error: %d    ****\n\n", i_me_error);
-                    free(iDataOfChannel);
-                    free(iData);
-                    goto error;
-                }
-                //int k = 2000/sample_rate;
-                //for(volatile int j = 0 ; j < k; ++j);
-                continue;
-
-                // Here is the part for awaiting the trigger
-                // recently it is controlled by the computer.
-                //Sleep(0.5);
-                unsigned edge_curr = 1;
-                unsigned edge_prev = 1;
-                while((edge_prev == edge_curr) || (edge_prev==1)){
-                    edge_prev = edge_curr;
-                    i_me_error = meIOSingle(&io_single_d[0],			// Output list
-                                            1,							// Number of elements in the above list
-                                            ME_IO_SINGLE_NO_FLAGS	);	// Flags
-                    if(i_me_error != ME_ERRNO_SUCCESS)
-                    {
-                        printf("****    meIOSingle - Error: %d    ****\n\n", i_me_error);
-                        free(iDataOfChannel);
-                        free(iData);
-                        goto error;
-                    }
-                    edge_curr = io_single_d[0].iValue & 0x00000001; // observe the LSB
-                }
+                i_digital_value = idxDataOfChannel[index_subdevice][idx_sample];
+                if(index_subdevice==15)
+                    i_flags|= ME_IO_SINGLE_TYPE_TRIG_SYNCHRONOUS;
+                io_single[index_subdevice].iDevice    = arrSubdevices[index_subdevice].m_iDeviceIndex;
+                io_single[index_subdevice].iSubdevice = arrSubdevices[index_subdevice].m_iSubdeviceIndex;
+                io_single[index_subdevice].iChannel	= index_channel;
+                io_single[index_subdevice].iDir		= ME_DIR_OUTPUT;
+                io_single[index_subdevice].iValue	= i_digital_value;
+                io_single[index_subdevice].iTimeOut	= i_timeout_ms;							// No timeout - not required for software output
+                io_single[index_subdevice].iFlags	= i_flags;
             }
-            ++counter;
-            if(counter==500)
-                break;
-			Sleep(100);
-		}
-        free(iDataOfChannel);
+            i_me_error = meIOSingle(&io_single[0],				// Output list
+                                    16,							// Number of elements in the above list
+                                    ME_IO_SINGLE_NO_FLAGS	);	// Flags
+            if(i_me_error == ME_ERRNO_SUCCESS)
+            {
+    /*
+                printf(	"Output %5.2lf V (%5d) to Device: %2d  Sub-device: %2d\n\n\n",
+                        d_value,
+                        i_digital_value,
+                        arrSubdevices[index_subdevice].m_iDeviceIndex,
+                        arrSubdevices[index_subdevice].m_iSubdeviceIndex					);
+    */
+            }
+            else if(i_me_error == ME_ERRNO_TIMEOUT)
+                printf("****    meIOSingle - Timeout    ****\n\n");
+            else
+            {
+                printf("****    meIOSingle - Error: %d    ****\n\n", i_me_error);
+                free(idxDataOfChannel);
+                free(iData);
+                goto error;
+            }
+            // Here is the part for awaiting the trigger
+            // recently it is controlled by the computer.
+            Sleep(0.5);
+        }
+        free(idxDataOfChannel);
         free(iData);
         break;
     }
@@ -368,11 +296,8 @@ int main(int argc, char* argv[])
 
 	meClose(0);
 	delete[] arrSubdevices;
-	delete[] arrSubdevicesDigital;
-#ifndef RELEASE
 	printf("Program completed successfully - Press any key to terminate\n\n");
 	_getch();
-#endif
 	return 0;
 
 error:
@@ -380,13 +305,8 @@ error:
     _getch();
 	meClose(0);
     delete[] arrSubdevices;
-    delete[] arrSubdevicesDigital;
 	return -1;
 }
-
-
-
-
 
 
 

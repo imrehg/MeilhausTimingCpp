@@ -1,0 +1,43 @@
+# depslib dependency file v1.0
+1351512156 source:c:\users\herbert\dropbox\coursegrad1\iams\meilhaus\meilhaustimingc++\src_timing\ctrlptstruct.c
+	<stdio.h>
+	<stdlib.h>
+	"Struct_Algorithm.h"
+
+1353658356 c:\users\herbert\dropbox\coursegrad1\iams\meilhaus\meilhaustimingc++\src_timing\struct_algorithm.h
+	<stdio.h>
+
+1353497633 source:c:\users\herbert\dropbox\coursegrad1\iams\meilhaus\meilhaustimingc++\src_timing\wavestruct.c
+	<stdio.h>
+	<stdlib.h>
+	"Struct_Algorithm.h"
+
+1353658358 source:c:\users\herbert\dropbox\coursegrad1\iams\meilhaus\meilhaustimingc++\src_timing\algorithm.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<string.h>
+	"Struct_Algorithm.h"
+
+1354529044 source:c:\users\herbert\dropbox\coursegrad1\iams\meilhaus\meilhaustimingc++\testconsolegeneric.cpp
+	"stdafx.h"
+	<windows.h>
+	<stdio.h>
+	<conio.h>
+	"medriver.h"
+
+1238659726 c:\users\herbert\dropbox\coursegrad1\iams\meilhaus\meilhaustimingc++\stdafx.h
+	<stdio.h>
+	<tchar.h>
+
+1327291248 c:\users\herbert\dropbox\coursegrad1\iams\meilhaus\meilhaustimingc++\medriver.h
+	"metypes.h"
+	"meerror.h"
+	"medefines.h"
+
+1327289370 c:\users\herbert\dropbox\coursegrad1\iams\meilhaus\meilhaustimingc++\metypes.h
+
+1327291256 c:\users\herbert\dropbox\coursegrad1\iams\meilhaus\meilhaustimingc++\meerror.h
+
+1327623768 c:\users\herbert\dropbox\coursegrad1\iams\meilhaus\meilhaustimingc++\medefines.h
+

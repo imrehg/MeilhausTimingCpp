@@ -1,7 +1,4 @@
-// Con_meIOSingleWriteAnalogSyncExtTrigger.cpp : Defines the entry point for the console application.
-//
-
-#include "stdafx.h"
+#include "dllmain.h"
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,12 +6,14 @@
 #include <memory.h>
 #include <time.h>
 
-extern "C"
-{
 #include "medriver.h"
-}
+
 #include "src_timing/Struct_Algorithm.h"
 #include "TestConsoleGeneric.h"
+
+// a sample exported function
+
+
 
 #define MAX_RANGES	 16
 struct SAORange
@@ -48,13 +47,13 @@ int utilBuildAOSub(SAOSubddevice *AOSubdevice,
                    int index_subdevice
 );
 
-int main(int argc, char* argv[])
+int DLL_EXPORT AO(double loop, double sample_rate, char* conf_path)
 {
 	// Call generic console function in parent directory to
 	// open system and list the available devices and subdevices.
-    double  loop = 0;
-    double  sample_rate = 20; //kHz
-    char    conf_path[] = "MOTconf.csv";
+    //double  loop = 0;
+    //double  sample_rate = 20; //20k
+    //char    conf_path[] = "MOTconf.csv";
 
 	int i_number_of_devices = TestConsoleMEIDSProlog();
 
@@ -308,7 +307,7 @@ int main(int argc, char* argv[])
 		io_single_d[0].iValue     = 0;
 		io_single_d[0].iTimeOut   = 0;   // No timeout - not required for software output
 		io_single_d[0].iFlags     = ME_IO_SINGLE_TYPE_DIO_BYTE;
-        int counter = 0;
+
         while(true)
 		{
             for(int idx_sample = 0; idx_sample < samples_each; ++idx_sample)
@@ -331,13 +330,9 @@ int main(int argc, char* argv[])
                     free(iData);
                     goto error;
                 }
-                //int k = 2000/sample_rate;
-                //for(volatile int j = 0 ; j < k; ++j);
-                continue;
 
                 // Here is the part for awaiting the trigger
-                // recently it is controlled by the computer.
-                //Sleep(0.5);
+                //Sleep(0.5); // recently it is controlled by the computer.
                 unsigned edge_curr = 1;
                 unsigned edge_prev = 1;
                 while((edge_prev == edge_curr) || (edge_prev==1)){
@@ -355,10 +350,6 @@ int main(int argc, char* argv[])
                     edge_curr = io_single_d[0].iValue & 0x00000001; // observe the LSB
                 }
             }
-            ++counter;
-            if(counter==500)
-                break;
-			Sleep(100);
 		}
         free(iDataOfChannel);
         free(iData);
@@ -457,4 +448,30 @@ int utilBuildAOSub(SAOSubddevice *AOSubdevice,
     // General setting for each subdevice
     AOSubdevice->m_iCurrentRange = 0;
     return 0;
+}
+
+
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+{
+    switch (fdwReason)
+    {
+        case DLL_PROCESS_ATTACH:
+            // attach to process
+            // return FALSE to fail DLL load
+            break;
+
+        case DLL_PROCESS_DETACH:
+            // detach from process
+            break;
+
+        case DLL_THREAD_ATTACH:
+            // attach to thread
+            break;
+
+        case DLL_THREAD_DETACH:
+            // detach from thread
+            break;
+    }
+    return TRUE; // succesful
 }

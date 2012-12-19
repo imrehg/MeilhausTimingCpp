@@ -95,6 +95,17 @@ int                   Map_ReadFromFile(FILE *f, double **key, double **value);
 int                   FreeProductOf_Map_ReadFromFile(double *key, double *value);
 int                   Map_LookupPowerToVoltage(double *mapKey, double *mapValue, int size, int ch, WaveformStruct *w);
 
+
+int Timing(
+    // intputs
+    double  loop,
+    double  sample_rate,
+    char    *conf_path,
+    // outputs
+    int     *samples_each,
+    int     *channels_num,
+    double  **ret
+);
 #ifdef __cplusplus
 }
 #endif

@@ -13,15 +13,15 @@ extern "C"
 int TestConsoleMEIDSProlog(void)
 {
 	// Increase the size of the console buffer
-	
+
 	HANDLE  h_console = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	COORD coord;
 
 	coord.X = 120;
-	
+
 	coord.Y = 2000;
-	
+
 	SetConsoleScreenBufferSize(h_console, coord);
 
 	char sz_buffer[1024];
@@ -33,15 +33,15 @@ int TestConsoleMEIDSProlog(void)
 	// Print the library version
 
 	int i_version_library;
-	
+
 	int i_me_error = meQueryVersionLibrary(&i_version_library);
 
 	if(i_me_error != ME_ERRNO_SUCCESS)
 	{
 		printf("****    meQueryVersionLibrary - Error: %d    ****\n\n", i_me_error);
-		
+
 		printf("Press any key to terminate\n\n");
-		
+
 		_getch();
 
 		return(-1);
@@ -56,9 +56,9 @@ int TestConsoleMEIDSProlog(void)
 	if(i_me_error != ME_ERRNO_SUCCESS)
 	{
 		printf("****    meOpen - Error: %d    ****\n\n", i_me_error);
-		
+
 		printf("Press any key to terminate\n\n");
-		
+
 		_getch();
 
 		return(-1);
@@ -73,11 +73,11 @@ int TestConsoleMEIDSProlog(void)
 	if(i_me_error != ME_ERRNO_SUCCESS)
 	{
 		printf("****    meQueryVersionMainDriver - Error: %d    ****\n\n", i_me_error);
-		
+
 		printf("Press any key to terminate\n\n");
-		
+
 		meClose(0);
-		
+
 		_getch();
 
 		return(-1);
@@ -88,17 +88,17 @@ int TestConsoleMEIDSProlog(void)
 	// Query the number of devices
 
 	int i_number_of_devices;
-	
+
 	i_me_error = meQueryNumberDevices(&i_number_of_devices);
 
 	if(i_me_error != ME_ERRNO_SUCCESS)
 	{
 		printf("****    meQueryNumberDevices - Error: %d    ****\n\n", i_me_error);
-		
+
 		printf("Press any key to terminate\n\n");
-		
+
 		meClose(0);
-		
+
 		_getch();
 
 		return(-1);
@@ -107,11 +107,11 @@ int TestConsoleMEIDSProlog(void)
 	if(i_number_of_devices == 0)
 	{
 		printf("****    No ME-IDS devices found in system    ****\n\n");
-		
+
 		printf("Press any key to terminate\n\n");
-		
+
 		meClose(0);
-		
+
 		_getch();
 
 		return(-1);
@@ -130,24 +130,24 @@ int TestConsoleMEIDSProlog(void)
 		int i_func_no;
 		int i_plugged;
 
-		i_me_error = meQueryInfoDevice(index_device, &i_vendor_id, &i_device_id, &i_serial_no, 
+		i_me_error = meQueryInfoDevice(index_device, &i_vendor_id, &i_device_id, &i_serial_no,
 												&i_bus_type, &i_bus_no, &i_dev_no, &i_func_no, &i_plugged);
 
 		if(i_me_error != ME_ERRNO_SUCCESS)
 		{
 			printf("****    meQueryInfoDevice - Error: %d    ****\n", i_me_error);
-			
+
 			printf("Press any key to continue\n\n");
-			
+
 			_getch();
-			
+
 			continue;
 		}
-		
+
         printf(	"%sDevice: %-2d - Ser Nr.: 0x%08X - %s\n"
 				"----------\n\n",
-				(i_plugged == ME_PLUGGED_IN) ? "" : "! ", 
-				index_device, 
+				(i_plugged == ME_PLUGGED_IN) ? "" : "! ",
+				index_device,
                 i_serial_no,
 				(i_plugged == ME_PLUGGED_IN) ? "Plugged in" : "NOT plugged in");
 
@@ -156,14 +156,14 @@ int TestConsoleMEIDSProlog(void)
 		if(i_me_error != ME_ERRNO_SUCCESS)
 		{
 			printf("****    meQueryNameDevice - Error: %d    ****\n", i_me_error);
-			
+
 			printf("Press any key to continue\n\n");
-			
+
 			_getch();
-			
+
 			continue;
 		}
-		
+
 		printf("    Device name: %s\n", &sz_buffer[0]);
 
 		i_me_error = meQueryDescriptionDevice(index_device, &sz_buffer[0], 1024);
@@ -171,14 +171,14 @@ int TestConsoleMEIDSProlog(void)
 		if(i_me_error != ME_ERRNO_SUCCESS)
 		{
 			printf("****    meQueryNameDevice - Error: %d    ****\n", i_me_error);
-			
+
 			printf("Press any key to continue\n\n");
-			
+
 			_getch();
-			
+
 			continue;
 		}
-		
+
 		printf("    Device description: %s\n", &sz_buffer[0]);
 
 		i_me_error = meQueryNameDeviceDriver(index_device, &sz_buffer[0], 1024);
@@ -186,14 +186,14 @@ int TestConsoleMEIDSProlog(void)
 		if(i_me_error != ME_ERRNO_SUCCESS)
 		{
 			printf("****    meQueryNameDeviceDriver - Error: %d    ****\n", i_me_error);
-			
+
 			printf("Press any key to continue\n\n");
-			
+
 			_getch();
-			
+
 			continue;
 		}
-		
+
 		printf("    Device driver name: %s\n", &sz_buffer[0]);
 
 		int i_version_device_driver;
@@ -203,14 +203,14 @@ int TestConsoleMEIDSProlog(void)
 		if(i_me_error != ME_ERRNO_SUCCESS)
 		{
 			printf("****    meQueryVersionDeviceDriver - Error: %d    ****\n", i_me_error);
-			
+
 			printf("Press any key to continue\n\n");
-			
+
 			_getch();
-			
+
 			continue;
 		}
-		
+
 		printf("    Device driver version: %d.%d.%d.%d\n", (i_version_device_driver >> 24) & 0x000000FF, (i_version_device_driver >> 16) & 0x000000FF, (i_version_device_driver >> 8) & 0x000000FF, i_version_device_driver & 0x000000FF);
 
 		int i_number_of_subdevices;
@@ -220,14 +220,14 @@ int TestConsoleMEIDSProlog(void)
 		if(i_me_error != ME_ERRNO_SUCCESS)
 		{
 			printf("****    meQueryNumberSubdevices - Error: %d    ****\n", i_me_error);
-			
+
 			printf("Press any key to continue\n\n");
-			
+
 			_getch();
-			
+
 			continue;
 		}
-		
+
 		printf("    Number of Subdevices: %d\n\n", i_number_of_subdevices);
 
 		for(int index_subdevice = 0; index_subdevice < i_number_of_subdevices; index_subdevice++)
@@ -244,29 +244,29 @@ int TestConsoleMEIDSProlog(void)
 			if(i_me_error != ME_ERRNO_SUCCESS)
 			{
 				printf("****    meQuerySubdeviceType - Error: %d    ****\n", i_me_error);
-				
+
 				printf("Press any key to continue\n\n");
-				
+
 				_getch();
-				
+
 				continue;
 			}
 
 			printf("        Subdevice type:     0x%08X\n", i_subdevice_type);
 			printf("        Subdevice subtype:  0x%08X\n", i_subdevice_subtype);
-			
+
 			int i_number_of_channels;
-			
+
 			i_me_error = meQueryNumberChannels(index_device, index_subdevice, &i_number_of_channels);
 
 			if(i_me_error != ME_ERRNO_SUCCESS)
 			{
 				printf("****    meQueryNumberChannels - Error: %d    ****\n", i_me_error);
-				
+
 				printf("Press any key to continue\n\n");
-				
+
 				_getch();
-				
+
 				continue;
 			}
 

@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Debug" />
-	<File name="main.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="2573" topLine="93" />
+	<ActiveTarget name="Release" />
+	<File name="TestConsoleGeneric.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="614" topLine="3" />
+	</File>
+	<File name="main.cpp" open="1" top="1" tabpos="2">
+		<Cursor position="1199" topLine="24" />
+	</File>
+	<File name="medriver.h" open="0" top="0" tabpos="0">
+		<Cursor position="539" topLine="0" />
+	</File>
+	<File name="src_timing\Struct_Algorithm.h" open="1" top="0" tabpos="4">
+		<Cursor position="4219" topLine="76" />
+	</File>
+	<File name="src_timing\algorithm.c" open="1" top="0" tabpos="3">
+		<Cursor position="15099" topLine="381" />
 	</File>
 </CodeBlocks_layout_file>

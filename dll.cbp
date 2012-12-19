@@ -2,44 +2,52 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="test" />
+		<Option title="dll" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\Debug\test" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
-				<Option type="1" />
+				<Option output="bin\Debug_dll\dll" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug_dll\" />
+				<Option type="3" />
 				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
 				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-DBUILD_DLL" />
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add directory=".\" />
+					<Add library="user32" />
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\Release\test" prefix_auto="1" extension_auto="1" />
-				<Option type="1" />
+				<Option output="bin\Release_dll\dll" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release_dll\" />
+				<Option type="3" />
 				<Option compiler="gcc" />
-				<Option use_console_runner="0" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
 				<Compiler>
-					<Add option="-DRELEASE" />
+					<Add option="-Wall" />
+					<Add option="-DBUILD_DLL" />
+					<Add option="-O2" />
 				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="user32" />
+				</Linker>
 			</Target>
 		</Build>
-		<Compiler>
-			<Add option="-Wall" />
-			<Add option="-fexceptions" />
-			<Add directory=".\" />
-		</Compiler>
 		<Linker>
 			<Add library=".\meIDSmain.lib" />
 			<Add library=".\meIDSTools.lib" />
 		</Linker>
 		<Unit filename="TestConsoleGeneric.cpp" />
 		<Unit filename="TestConsoleGeneric.h" />
-		<Unit filename="main.cpp" />
+		<Unit filename="dllmain.cpp" />
+		<Unit filename="dllmain.h" />
 		<Unit filename="meIDSToolsDLL.h" />
 		<Unit filename="medefines.h" />
 		<Unit filename="medriver.h" />
@@ -55,8 +63,6 @@
 		<Unit filename="src_timing\algorithm.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="stdafx.cpp" />
-		<Unit filename="stdafx.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
